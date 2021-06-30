@@ -82,7 +82,7 @@ Summary:                        Cross-platform make system
 # some GPL-licensed bison-generated files, which all include an
 # exception granting redistribution under terms of your choice
 License:                        BSD and MIT and zlib
-URL:                            http://www.cmake.org
+URL:                            https://cmake.org
 Vendor:                         Package Store <https://pkgstore.github.io>
 Packager:                       Kitsune Solar <kitsune.solar@gmail.com>
 
