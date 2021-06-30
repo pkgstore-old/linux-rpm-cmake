@@ -95,6 +95,8 @@ Source2:                        macros.%{name}
 Source3:                        %{name}.attr
 Source4:                        %{name}.prov
 Source5:                        %{name}.req
+# Signature
+Source900:                      http://www.cmake.org/files/v%{major_version}.%{minor_version}/%{orig_name}-%{version}%{?versuf}-SHA-256.txt.asc
 
 # Always start regular patches with numbers >= 100.
 # We need lower numbers for patches in compat package.
