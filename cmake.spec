@@ -1,5 +1,5 @@
 # Do we add appdata-files?
-# consider conditional on whether %%_metainfodir is defined or not instead -- rex
+# Consider conditional on whether %%_metainfodir is defined or not instead -- rex.
 %if 0%{?fedora} || 0%{?rhel} > 7
 %bcond_without appdata
 %else
@@ -7,29 +7,29 @@
 %endif
 
 # Set to bcond_without or use --with bootstrap if bootstrapping a new release
-# or architecture
+# or architecture.
 %bcond_with bootstrap
 
-# Build with Emacs support
+# Build with Emacs support.
 %bcond_without emacs
 
-# Run git tests
+# Run git tests.
 %bcond_without git_test
 
-# Set to bcond_with or use --without gui to disable qt4 gui build
+# Set to bcond_with or use "--without" gui to disable qt4 gui build.
 %bcond_without gui
 
-# Use ncurses for colorful output
+# Use ncurses for colorful output.
 %bcond_without ncurses
 
-# Setting the Python-version used by default
+# Setting the Python-version used by default.
 %if 0%{?rhel} && 0%{?rhel} < 8
 %bcond_with python3
 %else
 %bcond_without python3
 %endif
 
-# Enable RPM dependency generators for cmake files written in Python
+# Enable RPM dependency generators for cmake files written in Python.
 %bcond_without rpm
 
 %bcond_without sphinx
@@ -42,33 +42,33 @@
 %bcond_without bundled_rhash
 %endif
 
-# Run tests
+# Run tests.
 %bcond_without test
 
-# Enable X11 tests
+# Enable X11 tests.
 %bcond_without X11_test
 
-# Place rpm-macros into proper location
+# Place rpm-macros into proper location.
 %global rpm_macros_dir %(d=%{_rpmconfigdir}/macros.d; [[ -d ${d} ]] || d=%{_sysconfdir}/rpm; echo ${d})
 
-# Setup _pkgdocdir if not defined already
+# Setup _pkgdocdir if not defined already.
 %{!?_pkgdocdir:%global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
-# Setup _vpath_builddir if not defined already
+# Setup _vpath_builddir if not defined already.
 %{!?_vpath_builddir:%global _vpath_builddir %{_target_platform}}
 
 %global major_version 3
 %global minor_version 21
-# Set to RC version if building RC, else %%{nil}
+# Set to RC version if building RC, else %%{nil}.
 %global rcsuf rc1
 %{?rcsuf:%global relsuf .%{rcsuf}}
 %{?rcsuf:%global versuf -%{rcsuf}}
 
-# For handling bump release by rpmdev-bumpspec and mass rebuild
+# For handling bump release by rpmdev-bumpspec and mass rebuild.
 %global baserelease 2
 
-# Uncomment if building for EPEL
-#global name_suffix %%{major_version}
+# Uncomment if building for EPEL.
+# global name_suffix %%{major_version}
 %global orig_name cmake
 
 %global release_prefix          100
@@ -78,11 +78,11 @@ Version:                        %{major_version}.%{minor_version}.0
 Release:                        %{release_prefix}%{?relsuf}%{?dist}
 Summary:                        Cross-platform make system
 
-# most sources are BSD
-# Source/CursesDialog/form/ a bunch is MIT
-# Source/kwsys/MD5.c is zlib
-# some GPL-licensed bison-generated files, which all include an
-# exception granting redistribution under terms of your choice
+# Most sources are BSD.
+# Source/CursesDialog/form/ a bunch is MIT.
+# Source/kwsys/MD5.c is zlib.
+# Some GPL-licensed bison-generated files, which all include an
+# exception granting redistribution under terms of your choice.
 License:                        BSD and MIT and zlib
 URL:                            https://cmake.org
 Vendor:                         Package Store <https://pkgstore.github.io>
@@ -91,30 +91,30 @@ Packager:                       Kitsune Solar <kitsune.solar@gmail.com>
 Source0:                        http://www.cmake.org/files/v%{major_version}.%{minor_version}/%{orig_name}-%{version}%{?versuf}.tar.gz
 Source1:                        %{name}-init.el
 Source2:                        macros.%{name}
-# See https://bugzilla.redhat.com/show_bug.cgi?id=1202899
+# See https://bugzilla.redhat.com/show_bug.cgi?id=1202899.
 Source3:                        %{name}.attr
 Source4:                        %{name}.prov
 Source5:                        %{name}.req
 
 # Always start regular patches with numbers >= 100.
 # We need lower numbers for patches in compat package.
-# And this enables us to use %%autosetup
+# And this enables us to use "%%autosetup".
 #
-# Patch to fix RindRuby vendor settings
+# Patch to fix RindRuby vendor settings.
 # http://public.kitware.com/Bug/view.php?id=12965
 # https://bugzilla.redhat.com/show_bug.cgi?id=822796
 Patch100:                       %{name}-findruby.patch
-# replace release flag -O3 with -O2 for fedora
+# Replace release flag "-O3" with "-O2" for Fedora.
 Patch101:                       %{name}-fedora-flag_release.patch
-# Add dl to CMAKE_DL_LIBS on MINGW
+# Add dl to CMAKE_DL_LIBS on MINGW.
 # https://gitlab.kitware.com/cmake/cmake/issues/17600
 Patch102:                       %{name}-mingw-dl.patch
 # (upstreamable)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1972535
-# fix FTBFS
+# Fix FTBFS.
 Patch103:                       %{name}-3.20.4-glibc_libdl.patch
 
-# Patch for renaming on EPEL
+# Patch for renaming on EPEL.
 %if 0%{?name_suffix:1}
 Patch1:                         %{name}-rename.patch
 %endif
@@ -125,7 +125,7 @@ BuildRequires:                  gcc-c++
 BuildRequires:                  gcc-gfortran
 BuildRequires:                  sed
 %if %{with git_test}
-# Tests fail if only git-core is installed, bug #1488830
+# Tests fail if only git-core is installed, bug #1488830.
 BuildRequires:                  git
 %else
 BuildConflicts:                 git-core
@@ -197,10 +197,10 @@ Requires:                       %{name}-data = %{version}-%{release}
 Requires:                       %{name}-rpm-macros = %{version}-%{release}
 Requires:                       %{name}-filesystem%{?_isa} = %{version}-%{release}
 
-# Explicitly require make.  (rhbz#1862014)
+# Explicitly require make. (rhbz#1862014)
 Requires:                       make
 
-# Provide the major version name
+# Provide the major version name.
 Provides:                       %{orig_name}%{major_version} = %{version}-%{release}
 
 # Source/kwsys/MD5.c
@@ -283,7 +283,7 @@ The %{name}-gui package contains the Qt based GUI for %{name}.
 %package rpm-macros
 Summary:                        Common RPM macros for %{name}
 Requires:                       rpm
-# when subpkg introduced
+# When subpkg introduced.
 Conflicts:                      cmake-data < 3.10.1-2
 
 BuildArch:                      noarch
@@ -352,11 +352,11 @@ find %{buildroot}%{_datadir}/%{name}/Modules -type f | xargs chmod -x
 [[ -n "$( find %{buildroot}%{_datadir}/%{name}/Modules -name \*.orig )" ]] &&
   echo "Found .orig files in %{_datadir}/%{name}/Modules, rebase patches" &&
   exit 1
-# Install major_version name links
+# Install major_version name links.
 %{!?name_suffix:for f in ccmake cmake cpack ctest; do ln -s ${f} %{buildroot}%{_bindir}/${f}%{major_version}; done}
 
 %if %{with emacs}
-# Install emacs cmake mode
+# Install emacs cmake mode.
 %{__mkdir_p} %{buildroot}%{_emacs_sitelispdir}/%{name} %{buildroot}%{_emacs_sitestartdir}
 %{__mv} %{buildroot}%{_emacs_sitelispdir}/%{name}-mode.el %{buildroot}%{_emacs_sitelispdir}/%{name}
 %{_emacs_bytecompile} %{buildroot}%{_emacs_sitelispdir}/%{name}/%{name}-mode.el
@@ -364,18 +364,18 @@ find %{buildroot}%{_datadir}/%{name}/Modules -type f | xargs chmod -x
 %else
 %{__rm} -f %{buildroot}%{_emacs_sitelispdir}
 %endif
-# RPM macros
+# RPM macros.
 %{__install} -p -m0644 -D %{SOURCE2} %{buildroot}%{rpm_macros_dir}/macros.%{name}
 %{__sed} -i -e "s|@@CMAKE_VERSION@@|%{version}|" -e "s|@@CMAKE_MAJOR_VERSION@@|%{major_version}|" %{buildroot}%{rpm_macros_dir}/macros.%{name}
 touch -r %{SOURCE2} %{buildroot}%{rpm_macros_dir}/macros.%{name}
 %if %{with rpm} && 0%{?_rpmconfigdir:1}
-# RPM auto provides
+# RPM auto provides.
 %{__install} -p -m0644 -D %{SOURCE3} %{buildroot}%{_prefix}/lib/rpm/fileattrs/%{name}.attr
 %{__install} -p -m0755 -D %{name}.prov %{buildroot}%{_prefix}/lib/rpm/%{name}.prov
 %{__install} -p -m0755 -D %{name}.req %{buildroot}%{_prefix}/lib/rpm/%{name}.req
 %endif
 %{__mkdir_p} %{buildroot}%{_libdir}/%{orig_name}
-# Install copyright files for main package
+# Install copyright files for main package.
 find Source Utilities -type f -iname copy\* | while read f
 do
   fname=$( basename ${f} )
@@ -383,12 +383,12 @@ do
   dname=$( basename ${dir} )
   %{__cp} -p ${f} ./${fname}_${dname}
 done
-# Cleanup pre-installed documentation
+# Cleanup pre-installed documentation.
 %if %{with sphinx}
 %{__mv} %{buildroot}%{_docdir}/%{name}/html .
 %endif
 %{__rm} -rf %{buildroot}%{_docdir}/%{name}
-# Install documentation to _pkgdocdir
+# Install documentation to _pkgdocdir.
 %{__mkdir_p} %{buildroot}%{_pkgdocdir}
 %{__cp} -pr %{buildroot}%{_datadir}/%{name}/Help %{buildroot}%{_pkgdocdir}
 %{__mv} %{buildroot}%{_pkgdocdir}/Help %{buildroot}%{_pkgdocdir}/rst
@@ -397,16 +397,16 @@ done
 %endif
 
 %if %{with gui}
-# Desktop file
+# Desktop file.
 desktop-file-install --delete-original \
   --dir=%{buildroot}%{_datadir}/applications \
   %{buildroot}%{_datadir}/applications/%{name}-gui.desktop
 
 %if %{with appdata}
-# Register as an application to be visible in the software center
+# Register as an application to be visible in the software center.
 #
 # NOTE: It would be *awesome* if this file was maintained by the upstream
-# project, translated and installed into the right place during `make install`.
+# project, translated and installed into the right place during "make install".
 #
 # See http://www.freedesktop.org/software/appstream/docs/ for more details.
 #
@@ -442,7 +442,7 @@ EOF
 %endif
 %endif
 
-# create manifests for splitting files and directories for filesystem-package
+# Create manifests for splitting files and directories for filesystem-package.
 find %{buildroot}%{_datadir}/%{name} -type d | \
   %{__sed} -e 's!^%{buildroot}!%%dir "!g' -e 's!$!"!g' > data_dirs.mf
 find %{buildroot}%{_datadir}/%{name} -type f | \
@@ -458,21 +458,21 @@ find %{buildroot}%{_bindir} -type f -or -type l -or -xtype l | \
 %if %{with test}
 %check
 pushd %{_vpath_builddir}
-# CTestTestUpload require internet access
-# CPackComponentsForAll-RPM-IgnoreGroup failing wih rpm 4.15 - https://gitlab.kitware.com/cmake/cmake/issues/19983
+# CTestTestUpload require internet access.
+# CPackComponentsForAll-RPM-IgnoreGroup failing wih rpm 4.15 - https://gitlab.kitware.com/cmake/cmake/issues/19983.
 NO_TEST="CTestTestUpload"
 # kwsys.testProcess-{4,5} are flaky on s390x.
 %ifarch s390x
 NO_TEST="${NO_TEST}|kwsys.testProcess-4|kwsys.testProcess-5"
 %endif
-# curl test may fail during bootstrap
+# curl test may fail during bootstrap.
 %if %{with bootstrap}
 NO_TEST="${NO_TEST}|curl"
 %endif
 bin/ctest%{?name_suffix} %{?_smp_mflags} -V -E "${NO_TEST}" --output-on-failure
-## do this only periodically, not for every build -- rdieter 20210429
-# Keep an eye on failing tests
-#bin/ctest%{?name_suffix} %{?_smp_mflags} -V -R "${NO_TEST}" --output-on-failure || :
+## Do this only periodically, not for every build -- rdieter 20210429.
+# Keep an eye on failing tests.
+# bin/ctest%{?name_suffix} %{?_smp_mflags} -V -R "${NO_TEST}" --output-on-failure || :
 popd
 %endif
 
@@ -507,8 +507,8 @@ popd
 
 
 %files doc
-# Pickup license-files from main-pkg's license-dir
-# If there's no license-dir they are picked up by %%doc previously
+# Pickup license-files from main-pkg's license-dir.
+# If there's no license-dir they are picked up by %%doc previously.
 %{?_licensedir:%license %{_datadir}/licenses/%{name}*}
 %doc %{_pkgdocdir}
 
