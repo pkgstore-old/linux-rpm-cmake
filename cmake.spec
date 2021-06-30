@@ -60,7 +60,7 @@
 %global major_version 3
 %global minor_version 20
 # Set to RC version if building RC, else %%{nil}.
-# %global rcsuf rc1
+# global rcsuf rc1
 %{?rcsuf:%global relsuf .%{rcsuf}}
 %{?rcsuf:%global versuf -%{rcsuf}}
 
@@ -88,7 +88,7 @@ URL:                            https://cmake.org
 Vendor:                         Package Store <https://pkgstore.github.io>
 Packager:                       Kitsune Solar <kitsune.solar@gmail.com>
 
-Source0:                        http://www.cmake.org/files/v%{major_version}.%{minor_version}/%{orig_name}-%{version}%{?versuf}.tar.gz
+Source0:                        https://cmake.org/files/v%{major_version}.%{minor_version}/%{orig_name}-%{version}%{?versuf}.tar.gz
 Source1:                        %{name}-init.el
 Source2:                        macros.%{name}
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1202899.
@@ -96,7 +96,7 @@ Source3:                        %{name}.attr
 Source4:                        %{name}.prov
 Source5:                        %{name}.req
 # Signature
-Source900:                      http://www.cmake.org/files/v%{major_version}.%{minor_version}/%{orig_name}-%{version}%{?versuf}-SHA-256.txt.asc
+Source900:                      https://cmake.org/files/v%{major_version}.%{minor_version}/%{orig_name}-%{version}%{?versuf}-SHA-256.txt.asc
 
 # Always start regular patches with numbers >= 100.
 # We need lower numbers for patches in compat package.
