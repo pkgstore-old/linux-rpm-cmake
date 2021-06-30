@@ -71,9 +71,11 @@
 #global name_suffix %%{major_version}
 %global orig_name cmake
 
+%global release_prefix          100
+
 Name:                           %{orig_name}%{?name_suffix}
 Version:                        %{major_version}.%{minor_version}.0
-Release:                        %{baserelease}%{?relsuf}%{?dist}
+Release:                        %{release_prefix}%{?relsuf}%{?dist}
 Summary:                        Cross-platform make system
 
 # most sources are BSD
