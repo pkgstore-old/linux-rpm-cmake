@@ -7,7 +7,7 @@
 ### Fedora COPR
 
 ```
-$ dnf copr enable pkgstore/cmake
+$ dnf copr enable pkgstore/build
 $ dnf install -y cmake
 ```
 
