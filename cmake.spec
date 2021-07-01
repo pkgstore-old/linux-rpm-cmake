@@ -114,7 +114,7 @@ Patch102:                       %{name}-mingw-dl.patch
 # (upstreamable)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1972535
 # Fix FTBFS.
-Patch103:                       %{name}-3.20.4-glibc_libdl.patch
+# Patch103:                     %{name}-3.20.4-glibc_libdl.patch
 
 # Patch for renaming on EPEL.
 %if 0%{?name_suffix:1}
