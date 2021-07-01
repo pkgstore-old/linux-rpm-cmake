@@ -464,7 +464,7 @@ pushd %{_vpath_builddir}
 # CPackComponentsForAll-RPM-IgnoreGroup failing wih rpm 4.15 - https://gitlab.kitware.com/cmake/cmake/issues/19983.
 NO_TEST="CTestTestUpload"
 
-# PKGSTORE: FIX TEST-580 - RunCMake.PrecompileHeaders (Failed)
+# [ PKGSTORE ]: FIX TEST-580 - RunCMake.PrecompileHeaders (Failed)
 %if 0%{?rhel} == 8
 NO_TEST="${NO_TEST}|RunCMake.PrecompileHeaders"
 %endif
