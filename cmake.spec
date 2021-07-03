@@ -139,7 +139,7 @@ BuildRequires:                  libX11-devel
 BuildRequires:                  ncurses-devel
 %endif
 %if %{with sphinx}
-BuildRequires:                  %{_bindir}/sphinx-build
+BuildRequires:                  python3-sphinx
 %endif
 %if %{without bootstrap}
 BuildRequires:                  bzip2-devel
