@@ -71,7 +71,7 @@
 # global name_suffix %%{major_version}
 %global orig_name cmake
 
-%global release_prefix          100
+%global release_prefix          101
 
 Name:                           %{orig_name}%{?name_suffix}
 Version:                        %{major_version}.%{minor_version}.0
@@ -139,6 +139,7 @@ BuildRequires:                  libX11-devel
 BuildRequires:                  ncurses-devel
 %endif
 %if %{with sphinx}
+# [PKGSTORE]: Replace "%{_bindir}/sphinx-build" to "python3-sphinx".
 BuildRequires:                  python3-sphinx
 %endif
 %if %{without bootstrap}
@@ -464,7 +465,7 @@ pushd %{_vpath_builddir}
 # CPackComponentsForAll-RPM-IgnoreGroup failing wih rpm 4.15 - https://gitlab.kitware.com/cmake/cmake/issues/19983.
 NO_TEST="CTestTestUpload"
 
-# [ PKGSTORE ]: FIX TEST-580 - RunCMake.PrecompileHeaders (Failed)
+# [PKGSTORE]: FIX TEST-580 - RunCMake.PrecompileHeaders (Failed)
 %if 0%{?rhel} == 8
 NO_TEST="${NO_TEST}|RunCMake.PrecompileHeaders"
 %endif
@@ -549,6 +550,10 @@ popd
 
 
 %changelog
+* Sun Jul 04 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-101.rc2
+- FIX: Replace "%{_bindir}/sphinx-build" to "python3-sphinx".
+- FIX: TEST-580 - RunCMake.PrecompileHeaders (Failed)
+
 * Thu Jul 01 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-100.rc2
 - UPD: 3.21.0 RC2.
 
