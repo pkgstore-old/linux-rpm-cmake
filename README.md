@@ -23,6 +23,13 @@ $ dnf install -y cmake
 $ dnf upgrade -y cmake
 ```
 
+## Remove
+
+```
+$ dnf erase -y cmake
+$ dnf copr remove pkgstore/build
+```
+
 ## How to Build
 
 1. Get source from [src.fedoraproject.org](https://src.fedoraproject.org/rpms/cmake).
