@@ -60,7 +60,7 @@
 %global major_version 3
 %global minor_version 21
 # Set to RC version if building RC, else %%{nil}.
-%global rcsuf rc2
+%global rcsuf rc3
 %{?rcsuf:%global relsuf .%{rcsuf}}
 %{?rcsuf:%global versuf -%{rcsuf}}
 
@@ -71,7 +71,7 @@
 # global name_suffix %%{major_version}
 %global orig_name cmake
 
-%global release_prefix          101
+%global release_prefix          100
 
 Name:                           %{orig_name}%{?name_suffix}
 Version:                        %{major_version}.%{minor_version}.0
@@ -550,6 +550,9 @@ popd
 
 
 %changelog
+* Wed Jul 14 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-100.rc3
+- UPD: 3.21.0 RC3.
+
 * Sun Jul 04 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-101.rc2
 - FIX: Replace "%{_bindir}/sphinx-build" to "python3-sphinx".
 - FIX: TEST-580 - RunCMake.PrecompileHeaders (Failed)
