@@ -60,12 +60,12 @@
 %global major_version 3
 %global minor_version 21
 # Set to RC version if building RC, else %%{nil}.
-%global rcsuf rc3
+#global rcsuf rc1
 %{?rcsuf:%global relsuf .%{rcsuf}}
 %{?rcsuf:%global versuf -%{rcsuf}}
 
 # For handling bump release by rpmdev-bumpspec and mass rebuild.
-%global baserelease 2
+%global baserelease 5
 
 # Uncomment if building for EPEL.
 # global name_suffix %%{major_version}
@@ -111,10 +111,6 @@ Patch101:                       %{name}-fedora-flag_release.patch
 # Add dl to CMAKE_DL_LIBS on MINGW.
 # https://gitlab.kitware.com/cmake/cmake/issues/17600
 Patch102:                       %{name}-mingw-dl.patch
-# (upstreamable)
-# https://bugzilla.redhat.com/show_bug.cgi?id=1972535
-# Fix FTBFS.
-# Patch103:                     %{name}-3.20.4-glibc_libdl.patch
 
 # Patch for renaming on EPEL.
 %if 0%{?name_suffix:1}
@@ -139,8 +135,7 @@ BuildRequires:                  libX11-devel
 BuildRequires:                  ncurses-devel
 %endif
 %if %{with sphinx}
-# [PKGSTORE]: Replace "%{_bindir}/sphinx-build" to "python3-sphinx".
-BuildRequires:                  python3-sphinx
+BuildRequires:                  %{_bindir}/sphinx-build
 %endif
 %if %{without bootstrap}
 BuildRequires:                  bzip2-devel
