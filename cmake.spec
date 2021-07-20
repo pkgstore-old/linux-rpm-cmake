@@ -71,7 +71,7 @@
 # global name_suffix %%{major_version}
 %global orig_name cmake
 
-%global release_prefix          100
+%global release_prefix          104
 
 Name:                           %{orig_name}%{?name_suffix}
 Version:                        %{major_version}.%{minor_version}.0
@@ -545,15 +545,18 @@ popd
 
 
 %changelog
-* Wed Jul 14 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-100.rc3
-- UPD: 3.21.0 RC3.
+* Tue Jul 20 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-104
+- UPD: v3.21.0.
 
-* Sun Jul 04 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-101.rc2
+* Wed Jul 14 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-103.rc3
+- UPD: v3.21.0 RC3.
+
+* Sun Jul 04 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-102.rc2
 - FIX: Replace "%{_bindir}/sphinx-build" to "python3-sphinx".
 - FIX: TEST-580 - RunCMake.PrecompileHeaders (Failed)
 
-* Thu Jul 01 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-100.rc2
-- UPD: 3.21.0 RC2.
+* Thu Jul 01 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-101.rc2
+- UPD: v3.21.0 RC2.
 
 * Wed Jun 30 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-100.rc1
 - UPD: Move to Package Store.
