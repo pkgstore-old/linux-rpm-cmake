@@ -65,16 +65,16 @@
 %{?rcsuf:%global versuf -%{rcsuf}}
 
 # For handling bump release by rpmdev-bumpspec and mass rebuild.
-%global baserelease 5
+%global baserelease 1
 
 # Uncomment if building for EPEL.
 # global name_suffix %%{major_version}
 %global orig_name cmake
 
-%global release_prefix          104
+%global release_prefix          100
 
 Name:                           %{orig_name}%{?name_suffix}
-Version:                        %{major_version}.%{minor_version}.0
+Version:                        %{major_version}.%{minor_version}.1
 Release:                        %{release_prefix}%{?relsuf}%{?dist}
 Summary:                        Cross-platform make system
 
@@ -545,18 +545,22 @@ popd
 
 
 %changelog
+* Sat Aug 14 2021 Package Store <kitsune.solar@gmail.com> - 3.21.1-100
+- NEW: v3.21.1.
+- FIX: rhbz#1986449.
+
 * Tue Jul 20 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-104
-- UPD: v3.21.0.
+- NEW: v3.21.0.
 
 * Wed Jul 14 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-103.rc3
-- UPD: v3.21.0 RC3.
+- NEW: v3.21.0 RC3.
 
 * Sun Jul 04 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-102.rc2
 - FIX: Replace "%{_bindir}/sphinx-build" to "python3-sphinx".
 - FIX: TEST-580 - RunCMake.PrecompileHeaders (Failed)
 
 * Thu Jul 01 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-101.rc2
-- UPD: v3.21.0 RC2.
+- NEW: v3.21.0 RC2.
 
 * Wed Jun 30 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-100.rc1
 - UPD: Move to Package Store.
