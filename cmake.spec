@@ -48,8 +48,11 @@
 # Enable X11 tests.
 %bcond_without X11_test
 
+# Do not build non-lto objects to reduce build time significantly.
+%global optflags %(echo '%{optflags}' | sed -e 's!-ffat-lto-objects!-fno-fat-lto-objects!g')
+
 # Place rpm-macros into proper location.
-%global rpm_macros_dir %(d=%{_rpmconfigdir}/macros.d; [[ -d ${d} ]] || d=%{_sysconfdir}/rpm; echo ${d})
+%global rpm_macros_dir %(d=%{_rpmconfigdir}/macros.d; [[ -d $d ]] || d=%{_sysconfdir}/rpm; echo $d)
 
 # Setup _pkgdocdir if not defined already.
 %{!?_pkgdocdir:%global _pkgdocdir %{_docdir}/%{name}-%{version}}
@@ -58,14 +61,14 @@
 %{!?_vpath_builddir:%global _vpath_builddir %{_target_platform}}
 
 %global major_version 3
-%global minor_version 21
+%global minor_version 23
 # Set to RC version if building RC, else %%{nil}.
-#global rcsuf rc1
+%global rcsuf rc5
 %{?rcsuf:%global relsuf .%{rcsuf}}
 %{?rcsuf:%global versuf -%{rcsuf}}
 
 # For handling bump release by rpmdev-bumpspec and mass rebuild.
-%global baserelease 1
+%global baserelease 0.1
 
 # Uncomment if building for EPEL.
 # global name_suffix %%{major_version}
@@ -74,7 +77,7 @@
 %global release_prefix          100
 
 Name:                           %{orig_name}%{?name_suffix}
-Version:                        %{major_version}.%{minor_version}.1
+Version:                        %{major_version}.%{minor_version}.0
 Release:                        %{release_prefix}%{?relsuf}%{?dist}
 Summary:                        Cross-platform make system
 
@@ -107,7 +110,9 @@ Source900:                      https://cmake.org/files/v%{major_version}.%{mino
 # https://bugzilla.redhat.com/show_bug.cgi?id=822796
 Patch100:                       %{name}-findruby.patch
 # Replace release flag "-O3" with "-O2" for Fedora.
+%if 0%{?fedora} && 0%{?fedora} < 34
 Patch101:                       %{name}-fedora-flag_release.patch
+%endif
 # Add dl to CMAKE_DL_LIBS on MINGW.
 # https://gitlab.kitware.com/cmake/cmake/issues/17600
 Patch102:                       %{name}-mingw-dl.patch
@@ -322,10 +327,12 @@ FCFLAGS="${FCFLAGS:-%optflags%{?_fmoddir: -I%_fmoddir}}"; export FCFLAGS
 SRCDIR="$( /usr/bin/pwd )"
 %{__mkdir} %{_vpath_builddir}
 pushd %{_vpath_builddir}
-${SRCDIR}/bootstrap --prefix=%{_prefix} --datadir=/share/%{name} \
-                    --docdir=/share/doc/%{name} --mandir=/share/man \
+${SRCDIR}/bootstrap --prefix=%{_prefix} \
+                    --datadir=/share/%{name} \
+                    --docdir=/share/doc/%{name} \
+                    --mandir=/share/man \
                     --%{?with_bootstrap:no-}system-libs \
-                    --parallel="$(echo %{?_smp_mflags} | sed -e 's|-j||g')" \
+                    --parallel="$(echo %{?_smp_mflags} | %{__sed} -e 's|-j||g')" \
 %if %{with bundled_rhash}
                     --no-system-librhash \
 %endif
@@ -338,9 +345,14 @@ ${SRCDIR}/bootstrap --prefix=%{_prefix} --datadir=/share/%{name} \
                     --sphinx-build=%{_bindir}/false \
 %endif
                     --%{!?with_gui:no-}qt-gui \
-;
+                    -- \
+                    -DCMAKE_C_FLAGS_RELEASE:STRING="-O2 -g -DNDEBUG" \
+                    -DCMAKE_CXX_FLAGS_RELEASE:STRING="-O2 -g -DNDEBUG" \
+                    -DCMAKE_Fortran_FLAGS_RELEASE:STRING="-O2 -g -DNDEBUG" \
+                    -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+                    -DCMAKE_INSTALL_DO_STRIP:BOOL=OFF
 popd
-%{make_build} -C %{_vpath_builddir} VERBOSE=1
+%{make_build} -C %{_vpath_builddir}
 
 
 %install
@@ -456,15 +468,12 @@ find %{buildroot}%{_bindir} -type f -or -type l -or -xtype l | \
 %if %{with test}
 %check
 pushd %{_vpath_builddir}
-# CTestTestUpload require internet access.
+# CTestTestUpload and BundleUtilities require internet access.
 # CPackComponentsForAll-RPM-IgnoreGroup failing wih rpm 4.15 - https://gitlab.kitware.com/cmake/cmake/issues/19983.
-NO_TEST="CTestTestUpload"
-
-# [PKGSTORE]: FIX TEST-580 - RunCMake.PrecompileHeaders (Failed)
-%if 0%{?rhel} == 8
-NO_TEST="${NO_TEST}|RunCMake.PrecompileHeaders"
-%endif
-
+NO_TEST="CTestTestUpload|BundleUtilities"
+# Likely failing for GCC 12.
+NO_TEST="${NO_TEST}|CustomCommand|CMakeLib.testCTestResourceAllocator"
+NO_TEST="${NO_TEST}|CMakeLib.testCTestResourceSpec|RunCMake.PositionIndependentCode"
 # kwsys.testProcess-{4,5} are flaky on s390x.
 %ifarch s390x
 NO_TEST="${NO_TEST}|kwsys.testProcess-4|kwsys.testProcess-5"
@@ -545,15 +554,114 @@ popd
 
 
 %changelog
+* Mon Mar 28 2022 Package Store <kitsune.solar@gmail.com> - 3.23.0-100.rc5
+- NEW: v3.23.0 RC5.
+
+* Wed Feb 23 2022 Björn Esser <besser82@fedoraproject.org> - 3.23.0-0.1.rc2
+- cmake-3.23.0-rc2
+  Fixes rhbz#2052100
+
+* Tue Jan 25 2022 Björn Esser <besser82@fedoraproject.org> - 3.22.2-1
+- cmake-3.22.2
+  Fixes rhbz#2045074
+
+* Thu Jan 20 2022 Björn Esser <besser82@fedoraproject.org> - 3.22.1-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
+* Wed Jan 19 2022 Björn Esser <besser82@fedoraproject.org> - 3.22.1-6
+- Add patch to fix compatibility of FortranCInterface with GCC gfortran 12 LTO
+  Fixes rhbz#2041904
+- Skip tests failing with GCC 12
+
+* Sun Dec 26 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.1-5
+- Backport two patches fixing regressions in FindBoost and FindGLUT
+
+* Fri Dec 17 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.1-4
+- Backport patch to add support for Python >= 3.10 in FindBoost.cmake
+
+* Thu Dec 16 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.1-3
+- Backport patch to add Boost 1.78 support
+
+* Thu Dec 16 2021 Tomáš Hrnčiar <thrnciar@redhat.com> - 3.22.1-2
+- Backport patch to add Python 3.11 support
+
+* Tue Dec 07 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.1-1
+- cmake-3.22.1
+  Fixes rhbz#2029974
+
+* Thu Dec 02 2021 Stephan Bergmann <sbergman@redhat.com> - 3.22.0-4
+- Fixes RPATH_CHANGE fails when shared object is a GNU ld script
+
+* Wed Dec 01 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.0-3
+- Update fix for rhbz#2027118 with upstream solution
+
+* Sun Nov 28 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.0-2
+- Add patch to partially revert incompatible changes in GNUInstallDirs.cmake
+  Fixes rhbz#2027118
+
+* Thu Nov 18 2021 Rex Dieter <rdieter@fedoraproject.org> - 3.22.0-1
+- cmake-3.22.0 (#2024712)
+
+* Fri Nov 12 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.0-0.6.rc3
+- cmake-3.22.0-rc3
+  Fixes rhbz#2022785
+
+* Wed Nov 03 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.0-0.5.rc2
+- Disable bootstrap build for jsoncpp
+
+* Wed Nov 03 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.0-0.4.rc2
+- Rebuild (jsoncpp)
+
+* Thu Oct 28 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.0-0.3.rc2
+- cmake-3.22.0-rc2
+  Fixes rhbz#2018235
+- Remove debug compiler flag in macros.cmake (CMAKE_Fortran_FLAGS_RELEASE)
+  Fixes rhbz#2017942
+
+* Thu Oct 28 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.0-0.2.rc1
+- Revert previous changes to macros.cmake (-O2 -g)
+  Fixes rhbz#2017942
+
+* Thu Oct 14 2021 Björn Esser <besser82@fedoraproject.org> - 3.22.0-0.1.rc1
+- cmake-3.22.0-rc1
+  Fixes rhbz#2014190
+- Do not build non-lto objects to reduce build time significantly
+- Explicitly force optimization level 2 and debuginfo for release builds
+
+* Mon Sep 20 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.3-1
+- cmake-3.21.3
+  Fixes rhbz#2006054
+
+* Wed Aug 25 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.2-1
+- cmake-3.21.2
+  Fixes rhbz#1997708
+
 * Sat Aug 14 2021 Package Store <kitsune.solar@gmail.com> - 3.21.1-100
 - NEW: v3.21.1.
 - FIX: rhbz#1986449.
 
+* Tue Jul 27 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.1-1
+- cmake-3.21.1
+  Fixes rhbz#1986449
+
+* Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3.21.0-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
 * Tue Jul 20 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-104
 - NEW: v3.21.0.
 
+* Thu Jul 15 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.0-5
+- cmake-3.21.0
+
 * Wed Jul 14 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-103.rc3
 - NEW: v3.21.0 RC3.
+
+* Thu Jul 08 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.0-4.rc3
+- cmake-3.21.0-rc3
+
+* Mon Jul 05 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.0-3.rc2
+- cmake-3.21.0-rc2
+- Drop libdl patch for glibc >= 2.34, as it is upstreamed
 
 * Sun Jul 04 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-102.rc2
 - FIX: Replace "%{_bindir}/sphinx-build" to "python3-sphinx".
