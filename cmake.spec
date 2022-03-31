@@ -49,10 +49,10 @@
 %bcond_without X11_test
 
 # Do not build non-lto objects to reduce build time significantly.
-%global optflags %(echo '%{optflags}' | sed -e 's!-ffat-lto-objects!-fno-fat-lto-objects!g')
+%global optflags %( echo '%{optflags}' | %{__sed} -e 's!-ffat-lto-objects!-fno-fat-lto-objects!g' )
 
 # Place rpm-macros into proper location.
-%global rpm_macros_dir %(d=%{_rpmconfigdir}/macros.d; [[ -d $d ]] || d=%{_sysconfdir}/rpm; echo $d)
+%global rpm_macros_dir %( d=%{_rpmconfigdir}/macros.d; [[ -d ${d} ]] || d=%{_sysconfdir}/rpm; echo ${d} )
 
 # Setup _pkgdocdir if not defined already.
 %{!?_pkgdocdir:%global _pkgdocdir %{_docdir}/%{name}-%{version}}
@@ -62,10 +62,6 @@
 
 %global major_version 3
 %global minor_version 23
-# Set to RC version if building RC, else %%{nil}.
-%global rcsuf rc5
-%{?rcsuf:%global relsuf .%{rcsuf}}
-%{?rcsuf:%global versuf -%{rcsuf}}
 
 # For handling bump release by rpmdev-bumpspec and mass rebuild.
 %global baserelease 0.1
@@ -74,11 +70,11 @@
 # global name_suffix %%{major_version}
 %global orig_name cmake
 
-%global release_prefix          100
+%global release_prefix          1000
 
 Name:                           %{orig_name}%{?name_suffix}
 Version:                        %{major_version}.%{minor_version}.0
-Release:                        %{release_prefix}%{?relsuf}%{?dist}
+Release:                        %{release_prefix}%{?dist}
 Summary:                        Cross-platform make system
 
 # Most sources are BSD.
@@ -88,18 +84,14 @@ Summary:                        Cross-platform make system
 # exception granting redistribution under terms of your choice.
 License:                        BSD and MIT and zlib
 URL:                            https://cmake.org
-Vendor:                         Package Store <https://pkgstore.github.io>
-Packager:                       Kitsune Solar <kitsune.solar@gmail.com>
 
-Source0:                        https://cmake.org/files/v%{major_version}.%{minor_version}/%{orig_name}-%{version}%{?versuf}.tar.gz
+Source0:                        %{name}-%{version}.tar.xz
 Source1:                        %{name}-init.el
 Source2:                        macros.%{name}
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1202899.
 Source3:                        %{name}.attr
 Source4:                        %{name}.prov
 Source5:                        %{name}.req
-# Signature
-Source900:                      https://cmake.org/files/v%{major_version}.%{minor_version}/%{orig_name}-%{version}%{?versuf}-SHA-256.txt.asc
 
 # Always start regular patches with numbers >= 100.
 # We need lower numbers for patches in compat package.
@@ -299,7 +291,7 @@ This package contains common RPM macros for %{name}.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 %prep
-%autosetup -n %{orig_name}-%{version}%{?versuf} -p 1
+%autosetup -n %{orig_name}-%{version} -p 1
 
 %if %{with rpm}
 %if %{with python3}
@@ -560,7 +552,11 @@ popd
 
 
 %changelog
-* Mon Mar 28 2022 Package Store <kitsune.solar@gmail.com> - 3.23.0-100.rc5
+* Thu Mar 31 2022 Package Store <pkgstore@mail.ru> - 3.23.0-1000
+- UPD: Rebuild by Package Store.
+- UPD: File "cmake.spec".
+
+* Mon Mar 28 2022 Package Store <pkgstore@mail.ru> - 3.23.0-100.rc5
 - NEW: v3.23.0 RC5.
 
 * Wed Feb 23 2022 Björn Esser <besser82@fedoraproject.org> - 3.23.0-0.1.rc2
@@ -642,10 +638,6 @@ popd
 - cmake-3.21.2
   Fixes rhbz#1997708
 
-* Sat Aug 14 2021 Package Store <kitsune.solar@gmail.com> - 3.21.1-100
-- NEW: v3.21.1.
-- FIX: rhbz#1986449.
-
 * Tue Jul 27 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.1-1
 - cmake-3.21.1
   Fixes rhbz#1986449
@@ -653,14 +645,8 @@ popd
 * Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3.21.0-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
-* Tue Jul 20 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-104
-- NEW: v3.21.0.
-
 * Thu Jul 15 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.0-5
 - cmake-3.21.0
-
-* Wed Jul 14 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-103.rc3
-- NEW: v3.21.0 RC3.
 
 * Thu Jul 08 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.0-4.rc3
 - cmake-3.21.0-rc3
@@ -668,17 +654,6 @@ popd
 * Mon Jul 05 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.0-3.rc2
 - cmake-3.21.0-rc2
 - Drop libdl patch for glibc >= 2.34, as it is upstreamed
-
-* Sun Jul 04 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-102.rc2
-- FIX: Replace "%{_bindir}/sphinx-build" to "python3-sphinx".
-- FIX: TEST-580 - RunCMake.PrecompileHeaders (Failed)
-
-* Thu Jul 01 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-101.rc2
-- NEW: v3.21.0 RC2.
-
-* Wed Jun 30 2021 Package Store <kitsune.solar@gmail.com> - 3.21.0-100.rc1
-- UPD: Move to Package Store.
-- UPD: License.
 
 * Tue Jun 29 2021 Björn Esser <besser82@fedoraproject.org> - 3.21.0-2.rc1
 - Rebuilt with upstreamed cmake-3.20.4-glibc_libdl.patch
